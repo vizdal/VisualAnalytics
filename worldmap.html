@@ -7,7 +7,19 @@
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <script src="d3-tip.js"></script>
 <script src="worldmap.js"></script>
+<script src="scatterPlot.js"></script>
 <div id="worldMapLoad"></div>
-<div id="yearDisplay" class="year-display">2018</div>
+<div id="yearDisplay" style="display:none;" class="year-display"></div>
+<div class="laxis" style="transform:rotate(-90deg);">
+    <select id="menu-y" name = "yAxis"></select>
+</div>
+<div class="graph-svg" id="graph"></div>
+<div class="rcolor">
+  Color:
+  <select id="menu-color" name="xAxis"></select>
+</div>
+<div class="raxis">
+  <select id="menu-x" name="xAxis"></select>
+</div>
 </body>
 </html>

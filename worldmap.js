@@ -13,7 +13,10 @@ window.addEventListener('DOMContentLoaded', (event) =>{
       height = 560 - margin.top - margin.bottom;
 
   var path = d3.geoPath();
-
+  var index = 0;
+  const MIN_YEAR = 2005;
+  const MAX_YEAR = 2018;
+  var index = 0;
   var svg = d3.select("#worldMapLoad")
               .append("svg")
               .attr("width", width)
@@ -30,12 +33,22 @@ window.addEventListener('DOMContentLoaded', (event) =>{
   svg.call(tip);
 
   d3.json("world_countries.json").then(data =>{
-    d3.csv("latestData.csv").then(happiness => {
-        ready(data,happiness);
+    d3.csv("Final-World-Happiness.csv").then(happiness => {
+      ready(data,filterData(happiness,MIN_YEAR),MIN_YEAR);
+      setInterval(function(){
+        index++;
+        if(MIN_YEAR + index > MAX_YEAR){
+          index = 0;
+        }
+        ready(data,filterData(happiness,MIN_YEAR+index),MIN_YEAR+index);
+      }, 2000);
+
     });
   });
-
-  function ready(data, population) {
+  filterData = function(data,year = 2018){
+    return data.filter(d => { return d.Year == year});;
+  }
+  function ready(data, population,year = 2005) {
     var populationById = {};
 
     var color = d3.scaleSequential()
@@ -43,39 +56,51 @@ window.addEventListener('DOMContentLoaded', (event) =>{
 
     population.forEach(function(d) { populationById[d['Country name']] = +d['Positive affect']; });
     data.features.forEach(function(d) { d.happiness = populationById[d.properties.name] });
-
-    svg.append("g")
-        .attr("class", "countries")
-      .selectAll("path")
-        .data(data.features)
-      .enter().append("path")
-        .attr("d", path)
-        .style("fill", function(d) {
-          color_ret = d3.interpolateWarm(color(populationById[d.properties.name]))
-          return color_ret; })
-        .style('stroke', 'white')
-        .style('stroke-width', 1.5)
-        .style("opacity",0.8)
-        // tooltips
-          .style("stroke","white")
-          .style('stroke-width', 0.3)
-          .on('mouseover',function(d){
-            tip.show(d);
-
-            d3.select(this)
-              .style("opacity", 1)
+    document.getElementById("yearDisplay").innerHTML = year;
+    let svgG = svg.append("g").attr("class", "countries");
+    const pathElements = svgG.selectAll("path").data(data.features);
+    pathElements.join(
+      create => {
+            create.append("path")
+            .attr("d", path)
+            .style("fill", function(d) {
+              color_ret = d3.interpolateReds(color(populationById[d.properties.name]))
+              return color_ret; })
+            .style('stroke', 'white')
+            .style('stroke-width', 1.5)
+            .style("opacity",0.8)
+            // tooltips
               .style("stroke","white")
-              .style("stroke-width",3);
-          })
-          .on('mouseout', function(d){
-            tip.hide(d);
+              .style('stroke-width', 0.3)
+              .on('mouseover',function(d){
+                tip.show(d);
 
-            d3.select(this)
-              .style("opacity", 0.8)
-              .style("stroke","white")
-              .style("stroke-width",0.3);
-          });
+                d3.select(this)
+                  .style("opacity", 1)
+                  .style("stroke","white")
+                  .style("stroke-width",3);
+              })
+              .on('mouseout', function(d){
+                tip.hide(d);
+                d3.select(this)
+                  .style("opacity", 0.8)
+                  .style("stroke","white")
+                  .style("stroke-width",0.3);
+              });3
 
+      },
+      update => update.transition().duration(1000)
+      .attr("d", path)
+      .style("fill", function(d) {
+        color_ret = d3.interpolateWarm(color(populationById[d.properties.name]))
+        return color_ret; })
+      .style('stroke', 'white')
+      .style('stroke-width', 1.5)
+      .style("opacity",0.8)
+      // tooltips
+        .style("stroke","white")
+        .style('stroke-width', 0.3)
+    );
     svg.append("path")
         .datum(topojson.mesh(data.features, function(a, b) { return a.id !== b.id; }))
          // .datum(topojson.mesh(data.features, function(a, b) { return a !== b; }))
