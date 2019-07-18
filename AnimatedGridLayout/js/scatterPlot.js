@@ -1,4 +1,5 @@
-document.addEventListener("DOMContentLoaded",function(event){
+document.getElementById('scatterPlotParent').addEventListener("click",function(event){
+  $('#bubbleOptions').show();
   scatterPlot.init(700,600);
 });
 const scatterPlot = {
@@ -33,7 +34,7 @@ const scatterPlot = {
                    .attr("transform", `translate(${width/2},${this.margin.y - 15})`);
     const that = this;
 
-    d3.csv("Final-World-Happiness.csv").then(function(data){
+    d3.csv("data/Final-World-Happiness.csv").then(function(data){
       //Filter for a year - 2018
       this.columns = data.columns;
       that.createMenu(data);
@@ -104,7 +105,6 @@ const scatterPlot = {
       const columnY = indexColumn(data,this.menuY.node().value);
       const classColumn = indexColumn(data,data.columns.length-1);
       data = scatterPlot.filterData(data,year);
-      console.log(data);
       return data.map( d => {
         return {
           x: +d[columnX],
@@ -117,7 +117,6 @@ const scatterPlot = {
   plotGraph: function(originalData,year = 2018){
     const data = this.prepareData(originalData,year);
     //Scale scaleLinear
-      document.getElementById("yearDisplay").innerHTML = year;
       const xScale = d3.scaleLinear().domain([d3.min(data,d => d.x) - 1,d3.max(data,d => d.x)])
                        .range([this.margin.x,this.width - this.margin.x]);
       const yScale = d3.scaleLinear().domain([d3.min(data,d => d.y) - 1,d3.max(data, d => d.y)])
@@ -127,6 +126,11 @@ const scatterPlot = {
                                       .range([0,20]);
 
     color.init(data);
+    this.svgG.select(".centertext").remove();
+    const textElem = this.svgG.append("text").attr("class","centertext").attr("font-size","4em")
+                    .attr("fill","#D9D9D9").attr("x",this.width-150).attr("y","150")
+                    .text(year);
+
     const circles = this.svgG.selectAll("circle").data(data);
     circles.join(
       create => create.append("circle")
@@ -135,15 +139,13 @@ const scatterPlot = {
                 .attr("r", d => radScale(d.classCol))
                 .attr("fill", d => color.transform(d.color))
                 .attr("stroke","black"),
-      update => update.
-      transition().duration(1000)
+      update => update.transition().duration(1000)
                       .attr("cx",d => xScale(d.x))
                       .attr("cy",d => yScale(d.y))
                       .attr("r", d => radScale(d.classCol))
                       .attr("fill", d => color.transform(d.color)),
       exit => null,
     );
-
     const leftAxis = d3.axisLeft(yScale);
     this.leftAxis.transition().duration(1000).call(leftAxis);
     this.leftAxis.select("text").text(originalData.columns[this.menuY.node().value]);
