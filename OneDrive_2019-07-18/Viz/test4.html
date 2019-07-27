@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style>
+            #div1 {width:200px; height:100px; background: aliceblue;
+                border: 1px; solid-color: black}
+        </style>
+        <script>
+
+            function showHide(){
+                var oDiv=document.getElementById('div1');
+                if(oDiv.style.display==='block'){
+                    oDiv.style.display='none';
+                }
+                else{
+                    oDiv.style.display='block'
+                }
+
+            }
+        </script>
+    </head>
+    <body>
+        <input type="button" value="switch" onclick="showHide()"/>
+        <div id="div1">
+
+        </div>
+    </body>
+</html>

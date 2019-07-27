@@ -1,6 +1,6 @@
 document.getElementById('scatterPlotParent').addEventListener("click",function(event){
   $('#bubbleOptions').show();
-  scatterPlot.init(700,600);
+  scatterPlot.init(500,600);
 });
 const scatterPlot = {
   init: function(height,width){

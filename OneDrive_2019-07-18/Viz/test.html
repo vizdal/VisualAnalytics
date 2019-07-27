@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <link rel="stylesheet" type="text/css" href="css1.css"/>
+        <style>
+            #div1 {width:200px; height:100px; background: aliceblue;
+                border: 1px; solid-color: black}
+        </style>
+        <script>
+            function toGreen(){
+
+                var oDiv=document.getElementById('div1');
+
+                oDiv.style.width='300px';
+                oDiv.style.height='300px';
+                oDiv.style.background='green';
+            }
+            function toBlue(){
+                var oDiv=document.getElementById('div1');
+                oDiv.style.width='400px';
+                oDiv.style.height='400px';
+                oDiv.style.background='blue';
+            }
+        </script>
+    </head>
+
+    <body>
+        <input type="checkbox" onmouseover="alert('a');" onmouseout="document.getElementById(div1).style.display='none';"/>
+        <input type="button" value="button" onclick="alert('sadassd');"/>
+
+        <div id="div1"
+             onmouseover="toGreen()"
+
+             onmouseout="toBlue()"
+
+
+        </div>
+
+    </body>
+
+</html>
